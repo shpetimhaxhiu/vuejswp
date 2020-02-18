@@ -5,16 +5,11 @@
 # ignore everything in the "wp-content" directory, except:
 # mu-plugins, plugins, and themes directories
 wp-content/*
-!wp-content/mu-plugins/
-!wp-content/plugins/
 !wp-content/themes/
 
 # ignore all mu-plugins, plugins, and themes
 # unless explicitly whitelisted at the end of this file
 wp-content/themes/*
-
-# ignore index.php in plugins folder
-wp-content/plugins/index.php
 
 # ignore all files starting with . or ~
 .*
@@ -67,4 +62,4 @@ Thumbs.db
 !composer.json
 
 # track these themes
-!wp-content/themes/html5blank-stable/
+!wp-content/themes/html5blank/

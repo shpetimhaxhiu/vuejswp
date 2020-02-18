@@ -20,10 +20,44 @@ if (!isset($content_width))
     $content_width = 900;
 }
 
+if ( ! function_exists( 'mytheme_register_nav_menu' ) ) {
+ 
+    function mytheme_register_nav_menu(){
+        register_nav_menus( array(
+            'primary_menu' => __( 'Primary Menu', 'html5blank' ),
+            'footer_menu'  => __( 'Footer Menu', 'html5blank' ),
+        ) );
+    }
+    add_action( 'after_setup_theme', 'mytheme_register_nav_menu', 0 );
+}
+
+
+function wpdocs_filter_wp_title( $title, $sep ) {
+    global $paged, $page;
+ 
+    if ( is_feed() )
+        return $title;
+ 
+    // Add the site name.
+    $title .= get_bloginfo( 'name' );
+ 
+    // Add the site description for the home/front page.
+    $site_description = get_bloginfo( 'description', 'display' );
+    if ( $site_description && ( is_home() || is_front_page() ) )
+        $title = "$title $sep $site_description";
+ 
+    // Add a page number if necessary.
+    if ( $paged >= 2 || $page >= 2 )
+        $title = "$title $sep " . sprintf( __( 'Page %s', 'html5blank' ), max( $paged, $page ) );
+ 
+    return $title;
+}
+add_filter( 'wp_title', 'wpdocs_filter_wp_title', 10, 2 );
+
+
 if (function_exists('add_theme_support'))
 {
-    // Add Menu Support
-    add_theme_support('menus');
+    add_theme_support( "title-tag" );
 
     // Add Thumbnail Theme Support
     add_theme_support('post-thumbnails');
@@ -312,16 +346,16 @@ function html5blankcomments($comment, $args, $depth)
 	<?php endif; ?>
 	<div class="comment-author vcard">
 	<?php if ($args['avatar_size'] != 0) echo get_avatar( $comment, $args['180'] ); ?>
-	<?php printf(__('<cite class="fn">%s</cite> <span class="says">says:</span>'), get_comment_author_link()) ?>
+	<?php printf(__('<cite class="fn">%s</cite> <span class="says">says:</span>', 'html5blank'), get_comment_author_link()) ?>
 	</div>
 <?php if ($comment->comment_approved == '0') : ?>
-	<em class="comment-awaiting-moderation"><?php _e('Your comment is awaiting moderation.') ?></em>
+	<em class="comment-awaiting-moderation"><?php _e('Your comment is awaiting moderation.', 'html5blank') ?></em>
 	<br />
 <?php endif; ?>
 
 	<div class="comment-meta commentmetadata"><a href="<?php echo htmlspecialchars( get_comment_link( $comment->comment_ID ) ) ?>">
 		<?php
-			printf( __('%1$s at %2$s'), get_comment_date(),  get_comment_time()) ?></a><?php edit_comment_link(__('(Edit)'),'  ','' );
+			printf( __('%1$s at %2$s', 'html5blank'), get_comment_date(),  get_comment_time()) ?></a><?php edit_comment_link(__('(Edit)', 'html5blank'),'  ','' );
 		?>
 	</div>
 
@@ -376,7 +410,7 @@ add_filter('the_category', 'remove_category_rel_from_category_list'); // Remove 
 add_filter('the_excerpt', 'shortcode_unautop'); // Remove auto <p> tags in Excerpt (Manual Excerpts only)
 add_filter('the_excerpt', 'do_shortcode'); // Allows Shortcodes to be executed in Excerpt (Manual Excerpts only)
 add_filter('excerpt_more', 'html5_blank_view_article'); // Add 'View Article' button instead of [...] for Excerpts
-add_filter('show_admin_bar', 'remove_admin_bar'); // Remove Admin bar
+// add_filter('show_admin_bar', 'remove_admin_bar'); // Remove Admin bar
 add_filter('style_loader_tag', 'html5_style_remove'); // Remove 'text/css' from enqueued stylesheet
 add_filter('post_thumbnail_html', 'remove_thumbnail_dimensions', 10); // Remove width and height dynamic attributes to thumbnails
 add_filter('image_send_to_editor', 'remove_thumbnail_dimensions', 10); // Remove width and height dynamic attributes to post images
